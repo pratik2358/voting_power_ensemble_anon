@@ -24,11 +24,13 @@
 #   python3 experiments/cinic_prepare_data.py --root notebooks/cinic
 # (the notebooks expect cinic_10_data/ relative to their own directory)
 
-set -eu
+set -e
 # Environment setup: batch jobs do not inherit your login
 # environment; put module loads / conda or venv activation in
-# slurm/env.sh (see slurm/env.sh.example)
+# slurm/env.sh (see slurm/env.sh.example). Sourced without `set -u`:
+# system init scripts (/etc/bashrc, module system) read unset variables.
 [ -f "${SLURM_SUBMIT_DIR}/slurm/env.sh" ] && . "${SLURM_SUBMIT_DIR}/slurm/env.sh"
+set -u
 cd "${SLURM_SUBMIT_DIR}/notebooks/cinic"
 
 # the notebooks save checkpoints into these directories but do not
