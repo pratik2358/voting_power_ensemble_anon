@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+data/
+cinic_10_data/
+cinic_various_models*/
+weight_finders*/
+results/dp/*.pkl

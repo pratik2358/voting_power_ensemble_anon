@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vpe"
+version = "1.0.0"
+description = "Voting power for ensemble methods: discovery and differential privacy"
+requires-python = ">=3.9"
+dependencies = ["numpy", "scipy", "scikit-learn", "pandas", "matplotlib", "tqdm", "torch"]
+
+[tool.setuptools]
+packages = ["vpe"]

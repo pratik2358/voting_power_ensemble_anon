@@ -1,0 +1,8 @@
+numpy
+scipy
+scikit-learn
+pandas
+matplotlib
+tqdm
+torch
+torchvision  # only needed for the CINIC-10 notebooks
