@@ -32,6 +32,9 @@ set -u
 cd "${SLURM_SUBMIT_DIR}"
 
 export OMP_NUM_THREADS=1
+# progress lines land in the .out file immediately instead of sitting
+# in Python's stdout buffer until it fills
+export PYTHONUNBUFFERED=1
 
 python3 experiments/mnist_timing.py
 

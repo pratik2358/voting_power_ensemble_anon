@@ -30,6 +30,10 @@ set -e
 set -u
 cd "${SLURM_SUBMIT_DIR}/notebooks/cinic"
 
+# progress lines land in the .out file immediately instead of sitting
+# in Python's stdout buffer until it fills
+export PYTHONUNBUFFERED=1
+
 python3 ../../experiments/cinic_predictions.py --data cinic_10_data
 python3 ../../experiments/cinic_eval.py
 python3 ../../experiments/cinic_dp.py \
