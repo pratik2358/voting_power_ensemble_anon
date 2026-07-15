@@ -289,8 +289,9 @@ def make_timing(outdir):
         style, fill, lab = pgf.METHOD[m]
         series.append((style, fill, lab, d["sizes"], d["median"][m],
                        None))
+    # extra y headroom so the north-west legend clears the regression curve
     write(outdir, "times_mnist.tex", pgf.line_axis(
-        series, "Number of Models", "Time (s)",
+        series, "Number of Models", "Time (s)", ymax=5000,
         legend_pos="north west",
         extra=("ymode=log",
                "legend style={font=\\scriptsize, fill opacity=0.8,"
