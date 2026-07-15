@@ -181,11 +181,17 @@ def make_dp(outdir):
     series.append(("gray, dashed, mark=none", "gray",
                    "Non-private ensemble", [eps[0], eps[-1]],
                    [np_acc, np_acc], None))
+    # legend outside, centered above the axis: every in-plot corner is
+    # crossed by a curve or by the non-private reference line
     body = pgf.line_axis(series, r"privacy budget $\epsilon$ per query",
                          "test accuracy (\\%)", xmode="log",
                          width=r"0.75\linewidth",
                          height=r"0.5\linewidth",
-                         legend_pos="south east")
+                         legend_pos="north west",
+                         extra=("legend style={at={(0.5,1.05)},"
+                                " anchor=south, font=\\scriptsize,"
+                                " draw=none, fill=none}",
+                                "legend columns=2"))
     write(outdir, "dp_mechanisms.tex", body)
 
     # D2: exact vs deployable panels (shared legend fragment)
