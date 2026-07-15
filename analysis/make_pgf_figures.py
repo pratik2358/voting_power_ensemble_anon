@@ -156,8 +156,9 @@ def make_datasets(outdir):
 
 # --------------------------------------------------------------- DP figures
 
-DP_ORDER = ["equal", "accuracy", "crh", "entropy_conf", "shapley",
-            "regression", "loo"]
+# same method sequence as ORDER / the shared legend, for consistency
+DP_ORDER = ["loo", "equal", "accuracy", "crh", "entropy_conf",
+            "shapley", "regression"]
 
 
 def make_dp(outdir):
@@ -283,8 +284,8 @@ def make_timing(outdir):
     with open(RES_TIMING) as f:
         d = json.load(f)
     series = []
-    for m in ["accuracy", "entropy", "regression", "crh", "loo",
-              "shapley"]:
+    for m in ["loo", "accuracy", "crh", "entropy", "shapley",
+              "regression"]:
         style, fill, lab = pgf.METHOD[m]
         series.append((style, fill, lab, d["sizes"], d["median"][m],
                        None))
