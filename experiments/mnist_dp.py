@@ -110,6 +110,10 @@ def stage_teachers():
     overlapping subsets (D3), both with the same label-flip rates."""
     rng = np.random.default_rng(SEED)
     rng_torch = torch.Generator().manual_seed(SEED)
+    # seed the global torch RNG too: train_teacher's nn.Linear weights are
+    # initialized from it, so without this the teachers (and every result
+    # derived from them) differ from run to run
+    torch.manual_seed(SEED)
     (X_train, y_train), (X_val, y_val), (X_test, y_test) = load_mnist()
 
     perm = rng.permutation(len(X_train))
