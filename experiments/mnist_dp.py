@@ -149,7 +149,7 @@ def compute_weights(y_preds_val, labels_val):
             1 - dpm.mean_entropies(y_preds_val.astype(np.float64))
             / np.log(y_preds_val.shape[2]), 0, 1),
         "crh": wf.crh_pytorch(),
-        "regression": wf.regression_pytorch(),
+        "regression": wf.regression_pytorch(num_iterations=5000),
         "shapley": wf.shapley_pytorch(method="plurality"),
         "loo": wf.loo_pytorch(method="plurality"),
     }

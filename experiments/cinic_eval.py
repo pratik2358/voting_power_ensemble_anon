@@ -42,7 +42,7 @@ def compute_weights(wf_val):
         "accuracy": wf_val.accuracy_weights(),
         "entropy": wf_val.entropy_weights(),
         "crh": wf_val.crh_pytorch(),
-        "regression": wf_val.regression_pytorch(num_iterations=300),
+        "regression": wf_val.regression_pytorch(num_iterations=5000),
         "loo": fast_values.loo(votes, wf_val.labels, 10),
     }
     if n <= 20:

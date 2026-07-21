@@ -140,7 +140,7 @@ class WeightFinding:
             trust = trust / np.sum(trust)
         return trust
 
-    def regression_pytorch(self, num_iterations=1000, lr = 0.001):
+    def regression_pytorch(self, num_iterations=5000, lr = 0.001):
         print("Calculating Regression weights for", len(self.y_preds), "models")
 
         w = np.ones(len(self.y_preds))

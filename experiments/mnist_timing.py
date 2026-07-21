@@ -4,7 +4,7 @@ Times the computation of the voting powers (not the training of the
 models) for MNIST ensembles of 3-16 logistic-regression teachers, on the
 10,000-sample auxiliary set, with the same implementations and settings
 as the main experiments (experiments/mnist_main.py; in particular
-regression uses 300 Adam iterations there). Equal power is omitted (no
+regression uses 5000 Adam iterations there). Equal power is omitted (no
 computation). Every measurement is repeated REPS times; the figure uses
 the median.
 
@@ -76,7 +76,7 @@ def main():
             "entropy": lambda: wf.entropy_weights(),
             "crh": lambda: wf.crh_pytorch(),
             "regression": lambda: wf.regression_pytorch(
-                num_iterations=300),
+                num_iterations=5000),
             "loo": lambda: fast_values.loo(votes, y_val, 10),
             "shapley": lambda: fast_values.shapley(votes, y_val, 10),
         }

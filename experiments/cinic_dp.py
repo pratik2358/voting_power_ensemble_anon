@@ -49,7 +49,7 @@ def main(wf_val_path, wf_test_path):
             1 - dpm.mean_entropies(val_preds.astype(np.float64))
             / np.log(val_preds.shape[2]), 0, 1),
         "crh": wf_val.crh_pytorch(),
-        "regression": wf_val.regression_pytorch(),
+        "regression": wf_val.regression_pytorch(num_iterations=5000),
         "loo": fast_values.loo(votes_val, wf_val.labels, 10),
     }
     if n_models <= 20:

@@ -149,7 +149,7 @@ def one_run(args):
         "accuracy": wf.accuracy_weights(),
         "entropy": wf.entropy_weights(),
         "crh": wf.crh_pytorch(),
-        "regression": wf.regression_pytorch(num_iterations=300),
+        "regression": wf.regression_pytorch(num_iterations=5000),
         "shapley": fast_values.shapley(votes_val, y_val, 2,
                                        empty_value=0.5),
         "loo": fast_values.loo(votes_val, y_val, 2),
