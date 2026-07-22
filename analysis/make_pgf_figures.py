@@ -40,7 +40,13 @@ def write(outdir, name, content):
 
 # --------------------------------------------------------------- MNIST main
 
-def mnist_line(data, sizes, rule, skip=()):
+def models_xlabel(rule):
+    """x-axis label carrying the voting rule, e.g. 'Number of Models (Borda)'."""
+    return "Number of Models (%s)" % {"borda": "Borda",
+                                      "plurality": "Plurality"}[rule]
+
+
+def mnist_line(data, sizes, rule, skip=(), ymin=None, ymax=None, ytick=None):
     series, ref = [], []
     for m in ORDER:
         if m in skip:
@@ -53,21 +59,19 @@ def mnist_line(data, sizes, rule, skip=()):
             ref += med
         style, fill, lab = pgf.METHOD[m]
         series.append((style, fill, lab, ns, med, None))
-    span = max(ref) - min(ref)
-    pad = max(span * 0.15, 0.05)
-    return pgf.line_axis(series, "Number of Models", "Accuracy (\\%)",
-                         ymin=min(ref) - pad, ymax=max(ref) + pad)
+    if ymin is None or ymax is None:
+        span = max(ref) - min(ref)
+        pad = max(span * 0.15, 0.05)
+        ymin = min(ref) - pad if ymin is None else ymin
+        ymax = max(ref) + pad if ymax is None else ymax
+    return pgf.line_axis(series, models_xlabel(rule), "Accuracy (\\%)",
+                         ymin=ymin, ymax=ymax, ytick=ytick)
 
 
 def mnist_box(data, sizes, rule):
     """Two stacked rows of grouped boxplots (7 ensemble sizes each), so
-    that boxes and rank labels remain readable at document font size."""
-    ref = np.concatenate([np.asarray(data[n][m][rule])
-                          for n in sizes for m in ORDER
-                          if m != "loo" and data[n][m][rule]])
-    lo = np.percentile(ref, 0.5)
-    hi = np.percentile(ref, 99.5)
-    pad = (hi - lo) * 0.12
+    that boxes and rank labels remain readable at document font size.
+    Fixed 80-90 y-scale: the LOO boxes that collapse below 80 are clipped."""
     rows = []
     half = (len(sizes) + 1) // 2
     for chunk in (sizes[:half], sizes[half:]):
@@ -78,9 +82,9 @@ def mnist_box(data, sizes, rule):
             groups.append((n, [(pgf.METHOD[m][1], data[n][m][rule], int(r))
                                for m, r in zip(ORDER, ranks)]))
         rows.append(pgf.grouped_boxplots(
-            groups, "Number of Models", "Accuracy (\\%)",
+            groups, models_xlabel(rule), "Accuracy (\\%)",
             width=r"0.99\textwidth", height="4cm", rank_font=r"\tiny",
-            ymin=lo - pad, ymax=hi + pad))
+            ymin=80, ymax=90, ytick="80,82,84,86,88,90"))
     return "\n\\par\\medskip\n".join(rows)
 
 
@@ -102,7 +106,7 @@ def make_mnist(outdir):
 
 # ------------------------------------------------- archived dataset boxplots
 
-def dataset_box(groups_data):
+def dataset_box(groups_data, rule, ymin=None, ymax=None, ytick=None):
     """groups_data: list of (label, {method: array})."""
     groups = []
     for lab, dd in groups_data:
@@ -110,8 +114,18 @@ def dataset_box(groups_data):
         ranks = len(meds) - np.argsort(np.argsort(meds))
         groups.append((lab, [(pgf.METHOD[m][1], dd[m], int(r))
                              for m, r in zip(ORDER, ranks)]))
-    return pgf.grouped_boxplots(groups, "Number of Models", "Accuracy (\\%)",
-                                height=r"0.66\linewidth")
+    return pgf.grouped_boxplots(groups, models_xlabel(rule), "Accuracy (\\%)",
+                                height=r"0.66\linewidth",
+                                ymin=ymin, ymax=ymax, ytick=ytick)
+
+
+# shared y-scale per dataset so paired Borda/Plurality panels are comparable;
+# LOO boxes that collapse below the floor are clipped (noted in the captions)
+DATASET_Y = {
+    "cinic": dict(ymin=40, ymax=75, ytick="40,45,50,55,60,65,70,75"),
+    "dmoz": dict(ymin=34, ymax=46, ytick="34,36,38,40,42,44,46"),
+    "phising": dict(ymin=70, ymax=95, ytick="70,75,80,85,90,95"),
+}
 
 
 def make_datasets(outdir):
@@ -131,7 +145,7 @@ def make_datasets(outdir):
                     (n, {m: np.array(d[m][rule], float) for m in ORDER}))
         for rule in per_rule:
             write(outdir, f"cinic_{tag}_{rule}.tex",
-                  dataset_box(per_rule[rule]))
+                  dataset_box(per_rule[rule], rule, **DATASET_Y["cinic"]))
     rerun_dir = {"dmoz": os.path.join(HERE, "..", "results", "dmoz_main"),
                  "phising": os.path.join(HERE, "..", "results",
                                          "phishing_main")}
@@ -151,7 +165,8 @@ def make_datasets(outdir):
                     (s, {m: np.array([float(x) for x in d[m][rule]])
                          for m in ORDER}))
         for rule in per_rule:
-            write(outdir, f"{name}_{rule}.tex", dataset_box(per_rule[rule]))
+            write(outdir, f"{name}_{rule}.tex",
+                  dataset_box(per_rule[rule], rule, **DATASET_Y[name]))
 
 
 # --------------------------------------------------------------- DP figures
@@ -295,13 +310,15 @@ def make_timing(outdir):
         style, fill, lab = pgf.METHOD[m]
         series.append((style, fill, lab, d["sizes"], d["median"][m],
                        None))
-    # extra y headroom so the north-west legend clears the regression curve
+    # legend outside, centered above the axis: the curves span the full log
+    # height (0.001 s to 80 s), so any in-plot corner overlaps some series
     write(outdir, "times_mnist.tex", pgf.line_axis(
-        series, "Number of Models", "Time (s)", ymax=5000,
+        series, "Number of Models", "Time (s)",
         legend_pos="north west",
         extra=("ymode=log",
-               "legend style={font=\\scriptsize, fill opacity=0.8,"
-               " text opacity=1}")))
+               "legend style={at={(0.5,1.05)}, anchor=south,"
+               " font=\\scriptsize, draw=none, fill=none}",
+               "legend columns=3")))
 
 
 def _pow10_scale(values, target=50.0):

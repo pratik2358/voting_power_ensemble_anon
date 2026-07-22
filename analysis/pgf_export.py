@@ -66,7 +66,7 @@ def coords(xs, ys):
 
 def line_axis(series, xlabel, ylabel, xmode="normal", ymin=None, ymax=None,
               width=r"0.97\linewidth", height=None, legend_pos=None,
-              extra=()):
+              ytick=None, extra=()):
     """series: list of (style, fillcolor, label_or_None, xs, ys, std_or_None).
     A std band is drawn behind its curve; labels go into the axis legend
     (only if legend_pos is given)."""
@@ -80,6 +80,8 @@ def line_axis(series, xlabel, ylabel, xmode="normal", ymin=None, ymax=None,
         opts.append(f"ymin={_fmt(ymin)}")
     if ymax is not None:
         opts.append(f"ymax={_fmt(ymax)}")
+    if ytick is not None:
+        opts.append("ytick={" + ytick + "}")
     if legend_pos:
         opts.append(f"legend pos={legend_pos}")
     opts += list(extra)
@@ -114,7 +116,7 @@ def box_stats(arr):
 
 def grouped_boxplots(groups, xlabel, ylabel, width=r"0.97\linewidth",
                      height=None, rank_font=r"\scriptsize",
-                     ymin=None, ymax=None, box_extend=0.8):
+                     ymin=None, ymax=None, ytick=None, box_extend=0.8):
     """groups: list of (tick_label, boxes) where boxes is a list of
     (fillcolor, data_array, rank_or_None). Boxes are placed at
     consecutive positions with a 2-slot gap between groups; ranks are
@@ -167,6 +169,8 @@ def grouped_boxplots(groups, xlabel, ylabel, width=r"0.97\linewidth",
         opts.append(f"ymin={_fmt(ymin)}")
     if ymax is not None:
         opts.append(f"ymax={_fmt(ymax)}")
+    if ytick is not None:
+        opts.append("ytick={" + ytick + "}")
     out = (["\\begin{tikzpicture}",
             "\\begin{axis}[" + ", ".join(opts) + "]"] + body
            + ["\\end{axis}", "\\end{tikzpicture}"])
